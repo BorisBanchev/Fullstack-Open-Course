@@ -34,14 +34,29 @@ const App = () => {
     setSelected(newAnecdote);
   };
 
+  const mostVotes = () => {
+    const maxValue = Math.max(...points);
+    const maxIndex = points.indexOf(maxValue);
+    return (
+      <div>
+        {anecdotes[maxIndex]}
+        <br />
+        has {maxValue} votes
+      </div>
+    );
+  };
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <br />
       has {points[selected]} votes
       <br />
       <Button handleClick={() => setMorePoints(selected)} text="vote" />{" "}
       <Button handleClick={setToSelected} text="new anecdote" />
+      <br />
+      <h1>Anecdote with most votes</h1>
+      {mostVotes()}
     </div>
   );
 };
