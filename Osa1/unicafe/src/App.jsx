@@ -9,6 +9,15 @@ const Header = () => {
 };
 
 const Statistics = (props) => {
+  let average = 0;
+  if (props.total !== 0) {
+    average =
+      (props.good * 1 + props.neutral * 0 + props.bad * -1) / props.total;
+  }
+  let positive = 0;
+  if (props.total !== 0) {
+    positive = (props.good / props.total) * 100;
+  }
   return (
     <div>
       <h1>statistics</h1>
@@ -18,6 +27,12 @@ const Statistics = (props) => {
         neutral {props.neutral}
         <br />
         bad {props.bad}
+        <br />
+        all {props.total}
+        <br />
+        average {average}
+        <br />
+        positive {positive} %
       </p>
     </div>
   );
@@ -32,19 +47,28 @@ const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
+  const [total, setTotal] = useState(0);
 
   const setToGood = () => {
     const goodUpdated = good + 1;
+    setToTotal();
     setGood(goodUpdated);
   };
   const setToNeutral = () => {
     const neutralUpdated = neutral + 1;
+    setToTotal();
     setNeutral(neutralUpdated);
   };
 
   const setToBad = () => {
     const badUpdated = bad + 1;
+    setToTotal();
     setBad(badUpdated);
+  };
+
+  const setToTotal = () => {
+    const totalUpdated = total + 1;
+    setTotal(totalUpdated);
   };
 
   return (
@@ -55,7 +79,7 @@ const App = () => {
         <Button handleClick={() => setToNeutral()} text="neutral" />
         <Button handleClick={() => setToBad()} text="bad" />
         <br />
-        <Statistics good={good} neutral={neutral} bad={bad} />
+        <Statistics good={good} neutral={neutral} bad={bad} total={total} />
       </div>
     </div>
   );
