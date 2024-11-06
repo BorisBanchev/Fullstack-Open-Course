@@ -32,7 +32,7 @@ const Statistics = (props) => {
         <br />
         average {average}
         <br />
-        positive {positive} %
+        positive {positive}%
       </p>
     </div>
   );
