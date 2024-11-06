@@ -10,30 +10,34 @@ const Header = () => {
 
 const Statistics = (props) => {
   let average = 0;
-  if (props.total !== 0) {
-    average =
-      (props.good * 1 + props.neutral * 0 + props.bad * -1) / props.total;
-  }
   let positive = 0;
   if (props.total !== 0) {
     positive = (props.good / props.total) * 100;
+    average =
+      (props.good * 1 + props.neutral * 0 + props.bad * -1) / props.total;
+    return (
+      <div>
+        <h1>statistics</h1>
+        <p>
+          good {props.good}
+          <br />
+          neutral {props.neutral}
+          <br />
+          bad {props.bad}
+          <br />
+          all {props.total}
+          <br />
+          average {average}
+          <br />
+          positive {positive}%
+        </p>
+      </div>
+    );
   }
   return (
     <div>
       <h1>statistics</h1>
-      <p>
-        good {props.good}
-        <br />
-        neutral {props.neutral}
-        <br />
-        bad {props.bad}
-        <br />
-        all {props.total}
-        <br />
-        average {average}
-        <br />
-        positive {positive}%
-      </p>
+      <b>No feedback given</b>
     </div>
   );
 };
