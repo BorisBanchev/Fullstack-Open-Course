@@ -28,11 +28,22 @@ const Content = ({ course }) => {
   );
 };
 
+const Total = ({ course }) => {
+  const parts = course.parts;
+  const exercises = parts.map((part) => part.exercises);
+  let total = 0;
+  exercises.forEach((element) => {
+    total += element;
+  });
+  return <div>total of {total} exercises</div>;
+};
+
 const Course = ({ course }) => {
   return (
     <div>
       <Header course={course} />
       <Content course={course} />
+      <Total course={course} />
     </div>
   );
 };
@@ -56,6 +67,11 @@ const App = () => {
         name: "State of a component",
         exercises: 14,
         id: 3,
+      },
+      {
+        name: "Redux",
+        exercises: 11,
+        id: 4,
       },
     ],
   };
