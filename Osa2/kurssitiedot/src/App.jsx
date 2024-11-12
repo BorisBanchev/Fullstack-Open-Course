@@ -35,6 +35,7 @@ const Total = ({ course }) => {
   exercises.forEach((element) => {
     total += element;
   });
+  console.log("What is happening here", exercises);
   return <div>total of {total} exercises</div>;
 };
 
