@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
-
+import noteService from "./services/persons";
 const Person = ({ person }) => {
   return (
     <div>
@@ -18,8 +17,8 @@ const Persons = ({ persons, filter }) => {
   );
   return (
     <div>
-      {filteredPersons.map((person, id) => (
-        <Person person={person} key={id} />
+      {filteredPersons.map((person, i) => (
+        <Person person={person} key={person.id} />
       ))}
     </div>
   );
@@ -44,10 +43,22 @@ const Personform = ({
   return (
     <form onSubmit={addPerson}>
       <div>
-        name: <input value={newName} onChange={handleNameChange} />
+        name:{" "}
+        <input
+          id="name"
+          name="name"
+          value={newName}
+          onChange={handleNameChange}
+        />
       </div>
       <div>
-        number: <input value={newNumber} onChange={handleNumberChange} />
+        number:{" "}
+        <input
+          id="number"
+          name="number"
+          value={newNumber}
+          onChange={handleNumberChange}
+        />
       </div>
       <div>
         <button type="submit">add</button>
@@ -63,12 +74,10 @@ const App = () => {
   const [filterText, setFilterText] = useState("");
 
   useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      setPersons(response.data);
+    noteService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
-
   const names = persons.map((person) => person.name);
 
   const addPerson = (event) => {
@@ -82,12 +91,14 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: String(persons.length + 1),
     };
 
-    setPersons(persons.concat(personObject));
-    setNewName("");
-    setNewNumber("");
+    noteService.create(personObject).then((returnedPerson) => {
+      console.log(returnedPerson);
+      setPersons(persons.concat(returnedPerson));
+      setNewName("");
+      setNewNumber("");
+    });
   };
 
   const handleNameChange = (event) => {
