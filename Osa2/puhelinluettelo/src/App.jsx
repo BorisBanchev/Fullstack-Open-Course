@@ -84,22 +84,37 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
 
-    if (names.includes(newName)) {
-      alert(`${newName} is already added to the phonebook`);
-      return;
+    const existing = persons.find((person) => person.name === newName);
+    if (existing) {
+      const toReplace = window.confirm(
+        `${newName} is already added to phonebook, replace the old number with a new one?`
+      );
+      if (toReplace) {
+        const updatedPerson = { ...existing, number: newNumber };
+        noteService
+          .replacePerson(updatedPerson.id, updatedPerson)
+          .then((returnedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== existing.id ? person : returnedPerson
+              )
+            );
+            setNewName("");
+            setNewNumber("");
+          });
+      }
+    } else {
+      const personObject = {
+        name: newName,
+        number: newNumber,
+      };
+
+      noteService.create(personObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
     }
-
-    const personObject = {
-      name: newName,
-      number: newNumber,
-    };
-
-    noteService.create(personObject).then((returnedPerson) => {
-      console.log(returnedPerson);
-      setPersons(persons.concat(returnedPerson));
-      setNewName("");
-      setNewNumber("");
-    });
   };
 
   const handleNameChange = (event) => {
