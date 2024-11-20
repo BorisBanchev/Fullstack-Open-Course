@@ -68,11 +68,20 @@ const Personform = ({
   );
 };
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null;
+  }
+
+  return <div className="error"> {message} </div>;
+};
+
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filterText, setFilterText] = useState("");
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     noteService.getAll().then((initialPersons) => {
@@ -101,6 +110,10 @@ const App = () => {
             );
             setNewName("");
             setNewNumber("");
+            setErrorMessage(`Changed ${existing.name} phone number`);
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
           });
       }
     } else {
@@ -114,6 +127,10 @@ const App = () => {
         setNewName("");
         setNewNumber("");
       });
+      setErrorMessage(`Added ${personObject.name}`);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     }
   };
 
@@ -135,6 +152,10 @@ const App = () => {
     if (toDelete) {
       noteService.deletePerson(id).then(() => {
         setPersons(persons.filter((person) => person.id !== id));
+        setErrorMessage(`Deleted ${removedPerson.name}`);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
       });
     }
   };
@@ -142,6 +163,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <Filter
         filterText={filterText}
         handleFilterTextChange={handleFilterTextChange}
