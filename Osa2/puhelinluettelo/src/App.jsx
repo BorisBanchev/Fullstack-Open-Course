@@ -72,7 +72,9 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null;
   }
-
+  if (message.includes("removed")) {
+    return <div className="error2"> {message} </div>;
+  }
   return <div className="error"> {message} </div>;
 };
 
@@ -114,7 +116,16 @@ const App = () => {
             setTimeout(() => {
               setErrorMessage(null);
             }, 5000);
+          })
+          .catch((error) => {
+            setErrorMessage(
+              `${existing.name} was already removed from the server`
+            );
+            setTimeout(() => {
+              setErrorMessage(null);
+            }, 5000);
           });
+        persons.filter((person) => person.id !== existing.id);
       }
     } else {
       const personObject = {
