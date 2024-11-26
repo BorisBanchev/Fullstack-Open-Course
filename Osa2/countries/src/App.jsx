@@ -9,22 +9,21 @@ const Search = ({ text, handleSearchChange, value }) => {
   );
 };
 
-const Country = ({ country, showAllData }) => {
-  if (showAllData !== true) {
+const Country = ({ country, showAllData, handleShowButton }) => {
+  if (!showAllData) {
     return (
       <div>
-        <p>{country.name.common}</p>
+        {country.name.common}{" "}
+        <button onClick={() => handleShowButton(country)}>show</button>
       </div>
     );
   } else {
     return (
       <div>
         <h1>{country.name.common}</h1>
-        <br />
-        <p>capital {country.capital[0]}</p>
-        <p>area {country.area}</p>
+        <p>capital: {country.capital[0]}</p>
+        <p>area: {country.area}</p>
         <b>languages:</b>
-        <br />
         <ul>
           {Object.values(country.languages).map((language, index) => (
             <li key={index}>{language}</li>
@@ -36,41 +35,59 @@ const Country = ({ country, showAllData }) => {
   }
 };
 
-const Countries = ({ countries, matchingCountries, filteredCountries }) => {
-  let showAllData = false;
+const Countries = ({
+  filteredCountries,
+  matchingCountries,
+  selectedCountry,
+  handleShowButton,
+}) => {
   if (matchingCountries === "Too many matches, specify another filter") {
     return <div>Too many matches, specify another filter</div>;
-  } else if (matchingCountries === "Show countries") {
+  }
+
+  if (selectedCountry) {
     return (
-      <div>
-        {filteredCountries.map((country, index) => (
-          <Country
-            country={country}
-            showAllData={showAllData}
-            key={index}
-          ></Country>
-        ))}
-      </div>
+      <Country
+        country={selectedCountry}
+        showAllData={true}
+        handleShowButton={handleShowButton}
+      />
     );
-  } else {
-    showAllData = true;
+  }
+
+  if (matchingCountries === "Show countries") {
     return (
       <div>
         {filteredCountries.map((country, index) => (
           <Country
-            country={country}
-            showAllData={showAllData}
             key={index}
-          ></Country>
+            country={country}
+            showAllData={false}
+            handleShowButton={handleShowButton}
+          />
         ))}
       </div>
     );
   }
+
+  return (
+    <div>
+      {filteredCountries.map((country, index) => (
+        <Country
+          key={index}
+          country={country}
+          showAllData={true}
+          handleShowButton={handleShowButton}
+        />
+      ))}
+    </div>
+  );
 };
 
 const App = () => {
   const [countries, setCountries] = useState([]);
   const [search, setSearch] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   useEffect(() => {
     countriesService.getAll().then((countries) => {
@@ -80,13 +97,18 @@ const App = () => {
 
   const handleSearchChange = (event) => {
     setSearch(event.target.value);
+    setSelectedCountry(null);
+  };
+
+  const handleShowButton = (country) => {
+    setSelectedCountry(country);
   };
 
   const filteredCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(search.toLowerCase())
   );
 
-  const matchingCountries = ({ filteredCountries }) => {
+  const matchingCountries = () => {
     if (filteredCountries.length > 10) {
       return "Too many matches, specify another filter";
     } else if (filteredCountries.length > 1 && filteredCountries.length <= 10) {
@@ -98,17 +120,17 @@ const App = () => {
 
   return (
     <div>
-      {" "}
       <Search
         text="find countries"
         handleSearchChange={handleSearchChange}
         value={search}
-      ></Search>{" "}
+      />
       <Countries
-        countries={countries}
-        matchingCountries={matchingCountries({ filteredCountries })}
         filteredCountries={filteredCountries}
-      ></Countries>
+        matchingCountries={matchingCountries()}
+        selectedCountry={selectedCountry}
+        handleShowButton={handleShowButton}
+      />
     </div>
   );
 };
