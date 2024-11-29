@@ -10,6 +10,26 @@ const Search = ({ text, handleSearchChange, value }) => {
 };
 
 const Country = ({ country, showAllData, handleShowButton }) => {
+  const [weather, setWeather] = useState(null);
+
+  useEffect(() => {
+    if (showAllData) {
+      const capital = country.capital[0];
+      countriesService
+        .getWeatherByCapital(capital)
+        .then((weatherData) => {
+          setWeather({
+            temperature: (weatherData.data.main.temp - 273.15).toFixed(2),
+            windSpeed: weatherData.data.wind.speed,
+            icon: weatherData.data.weather[0].icon,
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching weather data:", error.message);
+        });
+    }
+  }, [showAllData, country]);
+
   if (!showAllData) {
     return (
       <div>
@@ -30,6 +50,22 @@ const Country = ({ country, showAllData, handleShowButton }) => {
           ))}
         </ul>
         <img src={country.flags.png} alt={country.flags.alt} width={150} />
+        <h2>Weather in {country.capital[0]}</h2>
+        {weather ? (
+          <>
+            <p>temperature: {weather.temperature} Celsius</p>
+            {weather.icon && (
+              <img
+                src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`}
+                alt="Weather icon"
+                width={80}
+              />
+            )}
+            <p>wind: {weather.windSpeed} m/s</p>
+          </>
+        ) : (
+          <p>Weather data not available</p>
+        )}
       </div>
     );
   }
