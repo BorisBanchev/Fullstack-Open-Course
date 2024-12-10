@@ -72,7 +72,7 @@ const Notification = ({ message }) => {
   if (message === null) {
     return null;
   }
-  if (message.includes("removed")) {
+  if (message.includes("removed") || message.includes("minimum")) {
     return <div className="error2"> {message} </div>;
   }
   return <div className="error"> {message} </div>;
@@ -133,15 +133,24 @@ const App = () => {
         number: newNumber,
       };
 
-      noteService.create(personObject).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
-      });
-      setErrorMessage(`Added ${personObject.name}`);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      noteService
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNewName("");
+          setNewNumber("");
+          setErrorMessage(`Added ${personObject.name}`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
+        });
     }
   };
 
