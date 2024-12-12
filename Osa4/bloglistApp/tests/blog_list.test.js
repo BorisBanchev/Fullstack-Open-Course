@@ -4,6 +4,7 @@ const listHelper = require("../utils/list_helper");
 const totalLikes = listHelper.totalLikes;
 const favoriteBlog = listHelper.favoriteBlog;
 const mostBlogs = listHelper.mostBlogs;
+const mostLikes = listHelper.mostLikes;
 const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -32,9 +33,9 @@ const blogs = [
   {
     _id: "5a422b891b54a676234d17fa",
     title: "First class tests",
-    author: "Robert C. Martin",
+    author: "Michael Chan",
     url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
-    likes: 10,
+    likes: 13,
     __v: 0,
   },
 ];
@@ -65,7 +66,7 @@ describe("total likes", () => {
   });
 
   test("of a bigger list is calculated right", () => {
-    assert.strictEqual(totalLikes(blogs), 34);
+    assert.strictEqual(totalLikes(blogs), 37);
   });
 });
 
@@ -75,7 +76,7 @@ describe("favorite blog", () => {
   });
 
   test("list with multiple blogs returns the one with most likes", () => {
-    assert.strictEqual(favoriteBlog(blogs), blogs[2]);
+    assert.strictEqual(favoriteBlog(blogs), blogs[3]);
   });
 });
 
@@ -84,6 +85,15 @@ describe("most blogs", () => {
     assert.deepStrictEqual(mostBlogs(blogs), {
       author: "Edsger W. Dijkstra",
       blogs: 2,
+    });
+  });
+});
+
+describe("most likes", () => {
+  test("list with multiple blogs returns the author with most likes", () => {
+    assert.deepStrictEqual(mostLikes(blogs), {
+      author: "Michael Chan",
+      likes: 20,
     });
   });
 });
