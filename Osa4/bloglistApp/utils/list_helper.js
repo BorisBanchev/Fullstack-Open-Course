@@ -13,8 +13,25 @@ const favoriteBlog = (blogs) => {
   );
 };
 
+const mostBlogs = (blogs) => {
+  let authorsWithBlogs = [];
+  for (let blog of blogs) {
+    let author = authorsWithBlogs.find((a) => a.author === blog.author);
+    if (author) {
+      author.blogs += 1;
+    } else {
+      authorsWithBlogs.push({ author: blog.author, blogs: 1 });
+    }
+  }
+  return authorsWithBlogs.reduce(
+    (max, author) => (max.blogs > author.blogs ? max : author),
+    authorsWithBlogs[0]
+  );
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
 };

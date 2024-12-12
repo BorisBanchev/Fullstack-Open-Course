@@ -3,7 +3,7 @@ const assert = require("assert");
 const listHelper = require("../utils/list_helper");
 const totalLikes = listHelper.totalLikes;
 const favoriteBlog = listHelper.favoriteBlog;
-
+const mostBlogs = listHelper.mostBlogs;
 const blogs = [
   {
     _id: "5a422a851b54a676234d17f7",
@@ -76,5 +76,14 @@ describe("favorite blog", () => {
 
   test("list with multiple blogs returns the one with most likes", () => {
     assert.strictEqual(favoriteBlog(blogs), blogs[2]);
+  });
+});
+
+describe("most blogs", () => {
+  test("list with multiple blogs returns the author with most blogs", () => {
+    assert.deepStrictEqual(mostBlogs(blogs), {
+      author: "Edsger W. Dijkstra",
+      blogs: 2,
+    });
   });
 });
