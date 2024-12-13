@@ -87,6 +87,24 @@ describe("adding a new blog", () => {
   });
 });
 
+describe("adding invalid blog", () => {
+  test("adding a blog wihtout title or url returns 400", async () => {
+    const newBlog1 = {
+      author: "Author 3",
+      url: "URL3.com",
+      likes: 3,
+    };
+    const newBlog2 = {
+      title: "Title 3",
+      author: "Author 3",
+      likes: 3,
+    };
+    await api.post("/api/blogs").send(newBlog1).expect(400);
+
+    await api.post("/api/blogs").send(newBlog2).expect(400);
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
