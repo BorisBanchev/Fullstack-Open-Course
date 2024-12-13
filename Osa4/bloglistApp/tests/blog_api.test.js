@@ -71,6 +71,20 @@ describe("adding a new blog", () => {
     assert.strictEqual(response.body.length, initialBlogs.length + 1);
     assert.deepStrictEqual(response.body[2], newBlog);
   });
+
+  test("adding a blog without likes defaults to 0", async () => {
+    const newBlog = {
+      title: "Title 3",
+      author: "Author 3",
+      url: "URL3.com",
+    };
+    const postResponse = await api
+      .post("/api/blogs")
+      .send(newBlog)
+      .expect(201)
+      .expect("Content-Type", /application\/json/);
+    assert.strictEqual(postResponse.body.likes, 0);
+  });
 });
 
 after(async () => {
