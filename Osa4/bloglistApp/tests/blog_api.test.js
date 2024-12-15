@@ -9,6 +9,7 @@ const api = supertest(app);
 const helper = require("../utils/list_helper");
 const { url } = require("inspector");
 const initialBlogs = require("../utils/list_helper").initialBlogs;
+
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(initialBlogs);
