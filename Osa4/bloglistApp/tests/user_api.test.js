@@ -61,4 +61,71 @@ describe("when there is initially one user at db", () => {
     assert(result.body.error.includes("expected `username` to be unique"));
     assert.strictEqual(usersAtEnd.length, usersAtStart.length);
   });
+  test("creation fails with proper statuscode and message if username or password is less than 3 characters", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser1 = {
+      username: "pa",
+      name: "correct_name",
+      password: "correct_password",
+    };
+    const newUser2 = {
+      username: "correct_username",
+      name: "correct_name2",
+      password: "pa",
+    };
+    const result1 = await api
+      .post("/api/users")
+      .send(newUser1)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    assert(
+      result1.body.error.includes(
+        "username and password must be at least 3 characters long"
+      )
+    );
+    const result2 = await api
+      .post("/api/users")
+      .send(newUser2)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    assert(
+      result2.body.error.includes(
+        "username and password must be at least 3 characters long"
+      )
+    );
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length);
+  });
+
+  test("creating username without username or password fails with proper statuscode and message", async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser1 = {
+      username: "correct_username",
+      name: "correct_name",
+    };
+    const newUser2 = {
+      name: "correct_name2",
+      password: "correct_password",
+    };
+    const result1 = await api
+      .post("/api/users")
+      .send(newUser1)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    assert(result1.body.error.includes("username and password are required"));
+    const result2 = await api
+      .post("/api/users")
+      .send(newUser2)
+      .expect(400)
+      .expect("Content-Type", /application\/json/);
+
+    const usersAtEnd = await helper.usersInDb();
+    assert(result2.body.error.includes("username and password are required"));
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length);
+  });
 });
