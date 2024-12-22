@@ -1,5 +1,6 @@
 const Blog = require("../models/blog");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 
 const dummy = (blogs) => {
   return 1;
@@ -48,18 +49,20 @@ const mostLikes = (blogs) => {
   );
 };
 
-const initialBlogs = [
+const initialBlogs = (id) => [
   {
     title: "Title 1",
     author: "Author 1",
     url: "URL1.com",
     likes: 1,
+    user: id,
   },
   {
     title: "Title 2",
     author: "Author 2",
     url: "URL2.com",
     likes: 2,
+    user: id,
   },
 ];
 
@@ -85,6 +88,15 @@ const nonExistingId = async () => {
   return blog._id.toString();
 };
 
+const getTokenForTestUser = async () => {
+  const testUser = await User.findOne({ username: "test_user" });
+  const userForToken = {
+    username: testUser.username,
+    id: testUser._id,
+  };
+  return jwt.sign(userForToken, process.env.SECRET);
+};
+
 module.exports = {
   dummy,
   totalLikes,
@@ -95,4 +107,5 @@ module.exports = {
   blogsInDb,
   nonExistingId,
   usersInDb,
+  getTokenForTestUser,
 };
