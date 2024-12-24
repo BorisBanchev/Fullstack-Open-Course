@@ -3,10 +3,11 @@ import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 
-const Notification = ({ errorMessage }) => {
+const Notification = ({ errorMessage, successMessage }) => {
   if (errorMessage !== null) {
     return <div className="error">{errorMessage}</div>;
   }
+  return <div className="success">{successMessage}</div>;
 };
 
 const LoginForm = ({
@@ -15,10 +16,14 @@ const LoginForm = ({
   password,
   setPassword,
   handleLogin,
+  errorMessage,
 }) => {
   return (
     <div>
       <h2>Log in to application</h2>
+      {errorMessage && (
+        <Notification errorMessage={errorMessage} successMessage={null} />
+      )}
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -54,6 +59,8 @@ const showBlogs = ({
   setTitle,
   setAuthor,
   setUrl,
+  successMessage,
+  errorMessage,
 }) => {
   if (!user) {
     return null;
@@ -62,6 +69,12 @@ const showBlogs = ({
   return (
     <div>
       <h2>Blogs</h2>
+      {errorMessage && (
+        <Notification errorMessage={errorMessage} successMessage={null} />
+      )}
+      {successMessage && (
+        <Notification errorMessage={null} successMessage={successMessage} />
+      )}
       <div>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
       </div>
@@ -112,6 +125,7 @@ const App = () => {
   const [password, setPassword] = useState("");
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
@@ -125,6 +139,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
   const handleLogin = async (event) => {
@@ -141,7 +156,7 @@ const App = () => {
       setUsername("");
       setPassword("");
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
+      setErrorMessage("Wrong username or password");
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -159,6 +174,12 @@ const App = () => {
       setTitle("");
       setAuthor("");
       setUrl("");
+      setSuccessMessage(
+        `a new blog ${newBlog.title} by ${newBlog.author} added`
+      );
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
     } catch (exception) {
       setErrorMessage("Invalid blog data");
       setTimeout(() => {
@@ -174,8 +195,6 @@ const App = () => {
 
   return (
     <div>
-      <Notification errorMessage={errorMessage} />
-
       {!user &&
         LoginForm({
           username,
@@ -183,6 +202,7 @@ const App = () => {
           password,
           setPassword,
           handleLogin,
+          errorMessage,
         })}
       {user &&
         showBlogs({
@@ -196,6 +216,8 @@ const App = () => {
           setAuthor,
           url,
           setUrl,
+          errorMessage,
+          successMessage,
         })}
     </div>
   );
