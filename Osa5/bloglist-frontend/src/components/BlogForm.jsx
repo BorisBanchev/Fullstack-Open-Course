@@ -1,13 +1,44 @@
+import { useState } from "react";
+import blogService from "../services/blogs";
+
 const BlogForm = ({
-  title,
-  setTitle,
-  author,
-  setAuthor,
-  url,
-  setUrl,
-  handleCreate,
+  setBlogs,
+  blogs,
+  setSuccessMessage,
+  setErrorMessage,
   setBlogFormVisible,
 }) => {
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+  const [url, setUrl] = useState("");
+
+  const handleCreate = async (event) => {
+    event.preventDefault();
+    try {
+      const newBlog = await blogService.create({
+        title,
+        author,
+        url,
+      });
+      setBlogs(blogs.concat(newBlog));
+      setTitle("");
+      setAuthor("");
+      setUrl("");
+      setBlogFormVisible(false);
+      setSuccessMessage(
+        `a new blog ${newBlog.title} by ${newBlog.author} added`
+      );
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+    } catch (exception) {
+      setErrorMessage("Invalid blog data");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
   return (
     <div>
       <form onSubmit={handleCreate}>

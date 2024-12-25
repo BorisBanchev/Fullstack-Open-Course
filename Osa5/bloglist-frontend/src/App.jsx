@@ -11,9 +11,6 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
   const [blogFormVisible, setBlogFormVisible] = useState(false);
 
   useEffect(() => {
@@ -62,45 +59,15 @@ const App = () => {
         </div>
         <div style={showBlogForm}>
           <BlogForm
-            title={title}
-            setTitle={setTitle}
-            author={author}
-            setAuthor={setAuthor}
-            url={url}
-            setUrl={setUrl}
-            handleCreate={handleCreate}
+            setBlogs={setBlogs}
+            blogs={blogs}
+            setSuccessMessage={setSuccessMessage}
+            setErrorMessage={setErrorMessage}
             setBlogFormVisible={setBlogFormVisible}
           />
         </div>
       </div>
     );
-  };
-
-  const handleCreate = async (event) => {
-    event.preventDefault();
-    try {
-      const newBlog = await blogService.create({
-        title,
-        author,
-        url,
-      });
-      setBlogs(blogs.concat(newBlog));
-      setTitle("");
-      setAuthor("");
-      setUrl("");
-      setBlogFormVisible(false);
-      setSuccessMessage(
-        `a new blog ${newBlog.title} by ${newBlog.author} added`
-      );
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
-    } catch (exception) {
-      setErrorMessage("Invalid blog data");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
-    }
   };
 
   const handleLogout = () => {
