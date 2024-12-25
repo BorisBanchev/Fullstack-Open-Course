@@ -1,124 +1,9 @@
 import { useState, useEffect } from "react";
-import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
-
-const Notification = ({ errorMessage, successMessage }) => {
-  if (errorMessage !== null) {
-    return <div className="error">{errorMessage}</div>;
-  }
-  return <div className="success">{successMessage}</div>;
-};
-
-const LoginForm = ({
-  username,
-  setUsername,
-  password,
-  setPassword,
-  handleLogin,
-  errorMessage,
-}) => {
-  return (
-    <div>
-      <h2>Log in to application</h2>
-      {errorMessage && (
-        <Notification errorMessage={errorMessage} successMessage={null} />
-      )}
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            value={password}
-            name="Password"
-            onChange={({ target }) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    </div>
-  );
-};
-const showBlogs = ({
-  blogs,
-  user,
-  handleLogout,
-  handleCreate,
-  title,
-  author,
-  url,
-  setTitle,
-  setAuthor,
-  setUrl,
-  successMessage,
-  errorMessage,
-}) => {
-  if (!user) {
-    return null;
-  }
-
-  return (
-    <div>
-      <h2>Blogs</h2>
-      {errorMessage && (
-        <Notification errorMessage={errorMessage} successMessage={null} />
-      )}
-      {successMessage && (
-        <Notification errorMessage={null} successMessage={successMessage} />
-      )}
-      <div>
-        {user.name} logged in <button onClick={handleLogout}>logout</button>
-      </div>
-      <br />
-      <div>
-        <form onSubmit={handleCreate}>
-          <h2>create new</h2>
-          <div>
-            title:
-            <input
-              type="text"
-              value={title}
-              name="Title"
-              onChange={({ target }) => setTitle(target.value)}
-            />
-          </div>
-          <div>
-            author:
-            <input
-              type="text"
-              value={author}
-              name="Author"
-              onChange={({ target }) => setAuthor(target.value)}
-            />
-          </div>
-          <div>
-            url:
-            <input
-              type="text"
-              value={url}
-              name="Url"
-              onChange={({ target }) => setUrl(target.value)}
-            />
-          </div>
-          <button type="submit">create</button>
-        </form>
-      </div>
-      {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
-      ))}
-    </div>
-  );
-};
-
+import LoginForm from "./components/LoginForm";
+import ShowBlogs from "./components/ShowBlogs";
+import BlogForm from "./components/BlogForm";
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState("");
@@ -129,6 +14,7 @@ const App = () => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
+  const [blogFormVisible, setBlogFormVisible] = useState(false);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -162,6 +48,34 @@ const App = () => {
       }, 5000);
     }
   };
+
+  const blogForm = () => {
+    const hideBlogForm = { display: blogFormVisible ? "none" : "" };
+    const showBlogForm = { display: blogFormVisible ? "" : "none" };
+
+    return (
+      <div>
+        <div style={hideBlogForm}>
+          <button onClick={() => setBlogFormVisible(true)}>
+            create new blog
+          </button>
+        </div>
+        <div style={showBlogForm}>
+          <BlogForm
+            title={title}
+            setTitle={setTitle}
+            author={author}
+            setAuthor={setAuthor}
+            url={url}
+            setUrl={setUrl}
+            handleCreate={handleCreate}
+            setBlogFormVisible={setBlogFormVisible}
+          />
+        </div>
+      </div>
+    );
+  };
+
   const handleCreate = async (event) => {
     event.preventDefault();
     try {
@@ -174,6 +88,7 @@ const App = () => {
       setTitle("");
       setAuthor("");
       setUrl("");
+      setBlogFormVisible(false);
       setSuccessMessage(
         `a new blog ${newBlog.title} by ${newBlog.author} added`
       );
@@ -205,19 +120,13 @@ const App = () => {
           errorMessage,
         })}
       {user &&
-        showBlogs({
+        ShowBlogs({
           blogs,
           user,
           handleLogout,
-          handleCreate,
-          title,
-          setTitle,
-          author,
-          setAuthor,
-          url,
-          setUrl,
-          errorMessage,
           successMessage,
+          errorMessage,
+          blogForm,
         })}
     </div>
   );
