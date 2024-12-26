@@ -9,6 +9,7 @@ const Blog = ({
   setErrorMessage,
   setSuccessMessage,
   user,
+  handleUpdate,
 }) => {
   const [showAllData, setShowAllData] = useState(false);
   const [userName, setUserName] = useState("");
@@ -46,28 +47,6 @@ const Blog = ({
           setErrorMessage(null);
         }, 5000);
       }
-    }
-  };
-
-  const handleUpdate = async (id, updatedBlog) => {
-    try {
-      const returnedBlog = await blogService.update(id, updatedBlog);
-      const user = await userService.getUserById(returnedBlog.user);
-      returnedBlog.user = user;
-      const updatedBlogs = blogs.map((blog) =>
-        blog.id !== id ? blog : returnedBlog
-      );
-      const sortedBlogs = updatedBlogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-      setSuccessMessage("Blog updated successfully");
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 5000);
-    } catch (exception) {
-      setErrorMessage("Failed to update blog");
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
     }
   };
 

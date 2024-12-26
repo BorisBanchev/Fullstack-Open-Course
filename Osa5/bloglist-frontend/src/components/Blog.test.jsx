@@ -46,4 +46,29 @@ describe("Blog", () => {
     expect(screen.getByText("test user")).toBeInTheDocument();
     expect(screen.getByText("likes 0")).toBeInTheDocument();
   });
+
+  test("clicking the like button twice calls the  handleUpdate twice", async () => {
+    const blog = {
+      id: "676c117510f50a152ce3ec7a",
+      title: "test title",
+      author: "test author",
+      url: "test url",
+      likes: 0,
+      user: {
+        username: "example",
+        name: "example1234",
+        id: "6766e07cba624ec0252680fe",
+      },
+    };
+
+    const mockHandler = vi.fn();
+    render(<Blog blog={blog} handleUpdate={mockHandler} />);
+    const user = userEvent.setup();
+    const button = screen.getByText("view");
+    await user.click(button);
+    const likeButton = screen.getByText("like");
+    await user.click(likeButton);
+    await user.click(likeButton);
+    expect(mockHandler.mock.calls).toHaveLength(2);
+  });
 });
