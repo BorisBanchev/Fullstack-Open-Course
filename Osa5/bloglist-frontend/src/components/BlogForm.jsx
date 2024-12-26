@@ -7,6 +7,7 @@ const BlogForm = ({
   setSuccessMessage,
   setErrorMessage,
   setBlogFormVisible,
+  user,
 }) => {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -20,6 +21,7 @@ const BlogForm = ({
         author,
         url,
       });
+      newBlog.user = user;
       setBlogs(blogs.concat(newBlog));
       setTitle("");
       setAuthor("");

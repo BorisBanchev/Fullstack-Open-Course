@@ -65,6 +65,7 @@ const App = () => {
             setSuccessMessage={setSuccessMessage}
             setErrorMessage={setErrorMessage}
             setBlogFormVisible={setBlogFormVisible}
+            user={user}
           />
         </div>
       </div>
