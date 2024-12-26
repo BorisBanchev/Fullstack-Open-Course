@@ -16,3 +16,14 @@
   padding: 10px;
   margin-bottom: 10px;
 }
+
+.deleteButton {
+  background: rgb(62, 62, 248);
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.deleteButton:hover {
+  background-color: blue;
+  color: black;
+}

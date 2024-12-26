@@ -37,6 +37,7 @@ const ShowBlogs = ({
           setBlogs={setBlogs}
           setErrorMessage={setErrorMessage}
           setSuccessMessage={setSuccessMessage}
+          user={user}
         />
       ))}
     </div>
