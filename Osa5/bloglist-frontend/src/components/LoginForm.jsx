@@ -1,5 +1,5 @@
 import Notification from "./Notification";
-
+import PropTypes from "prop-types";
 const LoginForm = ({
   username,
   setUsername,
@@ -38,4 +38,15 @@ const LoginForm = ({
     </div>
   );
 };
+
+LoginForm.propTypes = {
+  username: PropTypes.string.isRequired,
+  setUsername: PropTypes.func.isRequired,
+  password: PropTypes.string.isRequired,
+  setPassword: PropTypes.func.isRequired,
+  handleLogin: PropTypes.func.isRequired,
+  errorMessage: PropTypes.string,
+};
+LoginForm.displayName = "LoginForm";
+
 export default LoginForm;
