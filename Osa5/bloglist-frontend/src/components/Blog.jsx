@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import blogService from "../services/blogs";
 import userService from "../services/users";
 
@@ -11,6 +11,13 @@ const Blog = ({
   user,
 }) => {
   const [showAllData, setShowAllData] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    if (user && user.name) {
+      setUserName(user.name);
+    }
+  });
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -18,7 +25,7 @@ const Blog = ({
     borderWidth: 1,
     marginBottom: 5,
   };
-  const userName = user.name;
+
   const toggleVisibility = () => {
     setShowAllData(!showAllData);
   };
@@ -67,13 +74,14 @@ const Blog = ({
   return (
     <div style={blogStyle}>
       <div>
-        {blog.title}, {blog.author}{" "}
+        {blog.title}
         <button onClick={toggleVisibility}>
           {showAllData ? "hide" : "view"}
         </button>
       </div>
       {showAllData && (
         <div>
+          <div>{blog.author}</div>
           <div>{blog.url}</div>
           <div>
             likes {blog.likes}{" "}
