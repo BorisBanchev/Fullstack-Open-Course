@@ -25,6 +25,7 @@ const App = () => {
       blogService.setToken(user.token);
     }
   }, []);
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -89,10 +90,13 @@ const App = () => {
       {user &&
         ShowBlogs({
           blogs,
+          setBlogs,
           user,
           handleLogout,
           successMessage,
+          setSuccessMessage,
           errorMessage,
+          setErrorMessage,
           blogForm,
         })}
     </div>

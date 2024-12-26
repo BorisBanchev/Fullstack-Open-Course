@@ -2,10 +2,13 @@ import Blog from "./Blog";
 import Notification from "./Notification";
 const ShowBlogs = ({
   blogs,
+  setBlogs,
   user,
   handleLogout,
   successMessage,
+  setSuccessMessage,
   errorMessage,
+  setErrorMessage,
   blogForm,
 }) => {
   if (!user) {
@@ -27,7 +30,15 @@ const ShowBlogs = ({
       <br />
       {blogForm()}
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          blogs={blogs}
+          setBlogs={setBlogs}
+          setErrorMessage={setErrorMessage}
+          setSuccessMessage={setSuccessMessage}
+          user={user}
+        />
       ))}
     </div>
   );

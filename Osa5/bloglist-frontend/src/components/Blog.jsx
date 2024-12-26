@@ -1,6 +1,14 @@
 import { useState } from "react";
+import blogService from "../services/blogs";
+import userService from "../services/users";
 
-const Blog = ({ blog }) => {
+const Blog = ({
+  blog,
+  blogs,
+  setBlogs,
+  setErrorMessage,
+  setSuccessMessage,
+}) => {
   const [showAllData, setShowAllData] = useState(false);
   const blogStyle = {
     paddingTop: 10,
@@ -12,6 +20,24 @@ const Blog = ({ blog }) => {
 
   const toggleVisibility = () => {
     setShowAllData(!showAllData);
+  };
+
+  const handleUpdate = async (id, updatedBlog) => {
+    try {
+      const returnedBlog = await blogService.update(id, updatedBlog);
+      const user = await userService.getUserById(returnedBlog.user);
+      returnedBlog.user = user;
+      setBlogs(blogs.map((blog) => (blog.id !== id ? blog : returnedBlog)));
+      setSuccessMessage("Blog updated successfully");
+      setTimeout(() => {
+        setSuccessMessage(null);
+      }, 5000);
+    } catch (exception) {
+      setErrorMessage("Failed to update blog");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
   };
 
   return (
@@ -26,7 +52,18 @@ const Blog = ({ blog }) => {
         <div>
           <div>{blog.url}</div>
           <div>
-            likes {blog.likes} <button>like</button>
+            likes {blog.likes}{" "}
+            <button
+              onClick={() =>
+                handleUpdate(blog.id, {
+                  ...blog,
+                  likes: blog.likes + 1,
+                  user: blog.user.id,
+                })
+              }
+            >
+              like
+            </button>
           </div>
           <div>{blog.user.name}</div>
         </div>
