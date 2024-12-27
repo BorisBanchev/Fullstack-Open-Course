@@ -45,8 +45,11 @@ beforeEach(async () => {
   await Blog.insertMany(initialBlogs(testUserId));
   const blogs = await api.get("/api/blogs");
   for (const index in blogs.body) {
-    TestUser.blogs = await TestUser.blogs.concat(blogs.body[index].id);
-    await TestUser.save();
+    await User.findByIdAndUpdate(
+      testUserId,
+      { $push: { blogs: blogs.body[index].id } },
+      { new: true, useFindAndModify: false }
+    );
   }
 });
 
@@ -59,12 +62,12 @@ describe("When there is initially some blogs saved", () => {
   });
 
   test("there are two blogs", async () => {
-    blogs = await helper.blogsInDb();
+    const blogs = await helper.blogsInDb();
     assert.strictEqual(blogs.length, initialBlogs(testUserId).length);
   });
 
   test("blogs have id field instead of _id", async () => {
-    blogs = await helper.blogsInDb();
+    const blogs = await helper.blogsInDb();
     blogs.forEach((blog) => {
       assert.ok(blog.id);
       assert.strictEqual(blog._id, undefined);

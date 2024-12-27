@@ -97,5 +97,4 @@ module.exports = {
   blogsInDb,
   nonExistingId,
   usersInDb,
-  getTokenForTestUser,
 };
