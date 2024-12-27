@@ -97,5 +97,24 @@ describe("Blog app", () => {
 
       await expect(page.locator("#likes")).toContainText("1");
     });
+
+    test("A blog added by the user can be deleted", async ({ page }) => {
+      await page.getByRole("button", { name: "create new blog" }).click();
+      await page.getByTestId("title").fill("example");
+      await page.getByTestId("author").fill("example author");
+      await page.getByTestId("url").fill("example url");
+
+      await page.getByRole("button", { name: "create" }).click();
+
+      await page.getByRole("button", { name: "view" }).click();
+
+      page.on("dialog", async (dialog) => {
+        await dialog.accept();
+      });
+
+      await page.getByRole("button", { name: "remove" }).click();
+
+      await expect(page.locator("#blogTitle")).not.toBeVisible();
+    });
   });
 });
