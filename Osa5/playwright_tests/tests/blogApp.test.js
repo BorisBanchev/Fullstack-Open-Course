@@ -82,5 +82,20 @@ describe("Blog app", () => {
       const viewButton = await blogEntry.locator("button", { hasText: "view" });
       await expect(viewButton).toBeVisible();
     });
+
+    test("A blog can be liked", async ({ page }) => {
+      await page.getByRole("button", { name: "create new blog" }).click();
+      await page.getByTestId("title").fill("example");
+      await page.getByTestId("author").fill("example author");
+      await page.getByTestId("url").fill("example url");
+
+      await page.getByRole("button", { name: "create" }).click();
+
+      await page.getByRole("button", { name: "view" }).click();
+
+      await page.getByRole("button", { name: "like" }).click();
+
+      await expect(page.locator("#likes")).toContainText("1");
+    });
   });
 });

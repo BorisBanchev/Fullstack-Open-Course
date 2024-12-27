@@ -62,7 +62,7 @@ const Blog = ({
         <div>
           <div>{blog.author}</div>
           <div>{blog.url}</div>
-          <div>
+          <div id="likes">
             likes {blog.likes}{" "}
             <button
               onClick={() =>
