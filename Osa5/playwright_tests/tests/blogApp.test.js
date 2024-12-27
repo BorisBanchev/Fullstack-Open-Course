@@ -22,4 +22,29 @@ describe("Blog app", () => {
       await expect(loginForm).toBeVisible();
     });
   });
+
+  describe("Login", () => {
+    test("succeeds with correct credentials", async ({ page }) => {
+      await page.getByTestId("username").fill("borisss");
+      await page.getByTestId("password").fill("salainen");
+
+      await page.getByRole("button", { name: "login" }).click();
+
+      await expect(page.getByText("Boris Banchev logged in")).toBeVisible();
+      await expect(page.getByRole("button", { name: "logout" })).toBeVisible();
+    });
+    test("fails with wrong credentials", async ({ page }) => {
+      await page.getByTestId("username").fill("borisss");
+      await page.getByTestId("password").fill("wrong");
+
+      await page.getByRole("button", { name: "login" }).click();
+
+      await expect(
+        page.getByText("Boris Banchev is logged in")
+      ).not.toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "logout" })
+      ).not.toBeVisible();
+    });
+  });
 });
