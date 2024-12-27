@@ -52,7 +52,7 @@ const Blog = ({
 
   return (
     <div style={blogStyle}>
-      <div>
+      <div id="blogTitle">
         {blog.title}
         <button onClick={toggleVisibility}>
           {showAllData ? "hide" : "view"}
