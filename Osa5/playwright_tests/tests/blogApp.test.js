@@ -59,6 +59,14 @@ describe("Blog app", () => {
           blogs: [],
         },
       });
+      await request.post("http://localhost:3003/api/users", {
+        data: {
+          name: "Erkki Esimerkki",
+          username: "erkki1234",
+          password: "salainen",
+          blogs: [],
+        },
+      });
 
       await page.goto("http://localhost:5173");
 
@@ -115,6 +123,50 @@ describe("Blog app", () => {
       await page.getByRole("button", { name: "remove" }).click();
 
       await expect(page.locator("#blogTitle")).not.toBeVisible();
+    });
+
+    test("user can see remove button if it is his own blog", async ({
+      page,
+    }) => {
+      // create a blog with the first user
+      await page.getByRole("button", { name: "create new blog" }).click();
+      await page.getByTestId("title").fill("example");
+      await page.getByTestId("author").fill("example author");
+      await page.getByTestId("url").fill("example url");
+      await page.getByRole("button", { name: "create" }).click();
+
+      await page.waitForSelector('div:has-text("example")');
+
+      //logout the first user
+      await page.getByRole("button", { name: "logout" }).click();
+      //login the second user
+      await page.getByTestId("username").fill("erkki1234");
+      await page.getByTestId("password").fill("salainen");
+      await page.getByRole("button", { name: "login" }).click();
+      //create a blog with the second user
+      await page.getByRole("button", { name: "create new blog" }).click();
+      await page.getByTestId("title").fill("example2");
+      await page.getByTestId("author").fill("example author2");
+      await page.getByTestId("url").fill("example url2");
+      await page.getByRole("button", { name: "create" }).click();
+
+      await page.waitForSelector('div:has-text("example2")');
+
+      const blogEntries = await page.locator("#allBlogs").all();
+
+      //check that second user cannot see first user blog remove button
+      const firstUserBlog = blogEntries[0];
+      await firstUserBlog.getByRole("button", { name: "view" }).click();
+      await expect(
+        firstUserBlog.getByRole("button", { name: "remove" })
+      ).not.toBeVisible();
+
+      //check that second user can see his own blog remove button
+      const secondUserBlog = blogEntries[1];
+      await secondUserBlog.getByRole("button", { name: "view" }).click();
+      await expect(
+        secondUserBlog.getByRole("button", { name: "remove" })
+      ).toBeVisible();
     });
   });
 });

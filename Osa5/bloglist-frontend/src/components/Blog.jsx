@@ -51,7 +51,7 @@ const Blog = ({
   };
 
   return (
-    <div style={blogStyle}>
+    <div id="allBlogs" style={blogStyle}>
       <div id="blogTitle">
         {blog.title}
         <button onClick={toggleVisibility}>
