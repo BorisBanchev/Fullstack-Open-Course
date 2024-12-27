@@ -168,5 +168,40 @@ describe("Blog app", () => {
         secondUserBlog.getByRole("button", { name: "remove" })
       ).toBeVisible();
     });
+
+    test("blogs are ordered by likes from most to least", async ({ page }) => {
+      // create blogs
+      await page.getByRole("button", { name: "create new blog" }).click();
+      await page.getByTestId("title").fill("blog1");
+      await page.getByTestId("author").fill("author1");
+      await page.getByTestId("url").fill("url1");
+      await page.getByRole("button", { name: "create" }).click();
+
+      await page.getByRole("button", { name: "create new blog" }).click();
+      await page.getByTestId("title").fill("blog2");
+      await page.getByTestId("author").fill("author2");
+      await page.getByTestId("url").fill("url2");
+      await page.getByRole("button", { name: "create" }).click();
+
+      // like blog1 twice
+      await page.getByRole("button", { name: "view" }).click();
+      for (let i = 0; i < 2; i++) {
+        await page.getByRole("button", { name: "like" }).click();
+      }
+      await page.reload();
+      await page.waitForTimeout(50);
+
+      // check order of the blogs
+      const blog1 = await page
+        .getByRole("button", { name: "view" })
+        .first()
+        .locator("..");
+      await expect(blog1).toContainText("blog1");
+      const blog2 = await page
+        .getByRole("button", { name: "view" })
+        .last()
+        .locator("..");
+      await expect(blog2).toContainText("blog2");
+    });
   });
 });
