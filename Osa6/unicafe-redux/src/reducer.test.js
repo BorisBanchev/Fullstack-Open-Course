@@ -60,7 +60,7 @@ describe("unicafe reducer", () => {
       bad: 1,
     });
   });
-  test("values are reset", () => {
+  test("values are reset to initial stage", () => {
     const action = {
       type: "ZERO",
     };
