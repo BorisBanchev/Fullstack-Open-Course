@@ -7,7 +7,7 @@ const Filter = () => {
     dispatch(setFilter(event.target.value));
   };
   const style = {
-    marginBottom: 10,
+    marginBottom: 11,
   };
 
   return (
