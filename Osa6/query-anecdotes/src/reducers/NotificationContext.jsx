@@ -10,6 +10,10 @@ const notificationReducer = (state, action) => {
       const votedAnecdoteMessage = action.payload;
       return votedAnecdoteMessage;
 
+    case "ERROR":
+      const errorMessage = action.payload;
+      return errorMessage;
+
     case "CLEAR":
       return "";
   }
