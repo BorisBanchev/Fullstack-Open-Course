@@ -135,21 +135,22 @@ const CreateNew = ({ addNew }) => {
     info.reset();
   };
 
+  const omitReset = ({ reset, ...rest }) => rest;
   return (
     <div>
       <h2>create a new anecdote</h2>
       <form onSubmit={handleSubmit} onReset={handleReset}>
         <div>
           content
-          <input {...content} />
+          <input {...omitReset(content)} />
         </div>
         <div>
           author
-          <input {...author} />
+          <input {...omitReset(author)} />
         </div>
         <div>
           url for more info
-          <input {...info} />
+          <input {...omitReset(info)} />
         </div>
         <div>
           <button type="submit">create</button>
