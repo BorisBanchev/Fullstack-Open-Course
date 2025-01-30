@@ -1,12 +1,25 @@
-import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Routes,
+  useParams,
+  useMatch,
+} from "react-router-dom";
 import { useState } from "react";
 
 const Menu = ({ anecdotes, addNew }) => {
   const padding = {
     paddingRight: 5,
   };
+
+  const match = useMatch("/anecdotes/:id");
+  const anecdote = match
+    ? anecdotes.find((a) => a.id === Number(match.params.id))
+    : null;
+
   return (
-    <Router>
+    <div>
       <div>
         <Link style={padding} to="/">
           {" "}
@@ -23,11 +36,31 @@ const Menu = ({ anecdotes, addNew }) => {
       </div>
 
       <Routes>
+        <Route
+          path="/anecdotes/:id"
+          element={<Anecdote anecdote={anecdote} />}
+        />
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/create" element={<CreateNew addNew={addNew} />} />
         <Route path="/about" element={<About />} />
       </Routes>
-    </Router>
+    </div>
+  );
+};
+
+const Anecdote = ({ anecdote }) => {
+  return (
+    <div>
+      <h2>
+        {anecdote.content} by {anecdote.author}
+      </h2>
+      <div>has {anecdote.votes} votes</div>
+      <br />
+      <div>
+        for more info see <a href={anecdote.info}> {anecdote.info}</a>
+      </div>
+      <br />
+    </div>
   );
 };
 
@@ -36,7 +69,9 @@ const AnecdoteList = ({ anecdotes }) => (
     <h2>Anecdotes</h2>
     <ul>
       {anecdotes.map((anecdote) => (
-        <li key={anecdote.id}>{anecdote.content}</li>
+        <li key={anecdote.id}>
+          <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+        </li>
       ))}
     </ul>
   </div>
@@ -165,7 +200,9 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
-      <Menu anecdotes={anecdotes} addNew={addNew} />
+      <Router>
+        <Menu anecdotes={anecdotes} addNew={addNew} />
+      </Router>
       <Footer />
     </div>
   );
