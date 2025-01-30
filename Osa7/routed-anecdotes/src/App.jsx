@@ -3,12 +3,12 @@ import {
   Route,
   Link,
   Routes,
-  useParams,
+  useNavigate,
   useMatch,
 } from "react-router-dom";
 import { useState } from "react";
 
-const Menu = ({ anecdotes, addNew }) => {
+const Menu = ({ anecdotes, addNew, notification }) => {
   const padding = {
     paddingRight: 5,
   };
@@ -34,7 +34,7 @@ const Menu = ({ anecdotes, addNew }) => {
           about{" "}
         </Link>
       </div>
-
+      <Notification notification={notification} />
       <Routes>
         <Route
           path="/anecdotes/:id"
@@ -110,19 +110,22 @@ const Footer = () => (
   </div>
 );
 
-const CreateNew = (props) => {
+const CreateNew = ({ addNew }) => {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
-
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
-    props.addNew({
-      content,
-      author,
-      info,
-      votes: 0,
-    });
+    addNew(
+      {
+        content,
+        author,
+        info,
+        votes: 0,
+      },
+      navigate
+    );
   };
 
   return (
@@ -153,10 +156,24 @@ const CreateNew = (props) => {
             onChange={(e) => setInfo(e.target.value)}
           />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
       </form>
     </div>
   );
+};
+
+const Notification = ({ notification }) => {
+  const style = {
+    border: "solid",
+    padding: 10,
+    borderWidth: 1,
+    marginBottom: 5,
+  };
+
+  if (notification === "") {
+    return null;
+  }
+  return <div style={style}>{notification}</div>;
 };
 
 const App = () => {
@@ -176,12 +193,16 @@ const App = () => {
       id: 2,
     },
   ]);
-
   const [notification, setNotification] = useState("");
 
-  const addNew = (anecdote) => {
+  const addNew = (anecdote, navigate) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+    navigate("/");
+    setNotification(`a new anecdote ${anecdote.content} created!`);
+    setTimeout(() => {
+      setNotification("");
+    }, 5000);
   };
 
   const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
@@ -201,8 +222,14 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Router>
-        <Menu anecdotes={anecdotes} addNew={addNew} />
+        <Menu
+          anecdotes={anecdotes}
+          addNew={addNew}
+          setNotification={setNotification}
+          notification={notification}
+        />
       </Router>
+
       <Footer />
     </div>
   );
