@@ -10,7 +10,12 @@ import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationMessage } from "./reducers/notificationReducer";
-import { setBlogs, createBlog } from "./reducers/blogsReducer";
+import {
+  setBlogs,
+  createBlog,
+  likeBlog,
+  removeBlog,
+} from "./reducers/blogsReducer";
 
 const App = () => {
   const [user, setUser] = useState(null);
@@ -59,7 +64,7 @@ const App = () => {
     });
 
     notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`);
-    //setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)));
+    dispatch(likeBlog(updatedBlog));
   };
 
   const handleLogout = () => {
@@ -71,7 +76,7 @@ const App = () => {
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.remove(blog.id);
-      //setBlogs(blogs.filter((b) => b.id !== blog.id));
+      dispatch(removeBlog(blog));
       notify(`Blog ${blog.title}, by ${blog.author} removed`);
     }
   };
