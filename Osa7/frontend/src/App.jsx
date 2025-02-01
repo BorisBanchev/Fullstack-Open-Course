@@ -17,8 +17,8 @@ import {
   removeBlog,
 } from "./reducers/blogsReducer";
 
+import { setUser, clearUser } from "./reducers/userReducer";
 const App = () => {
-  const [user, setUser] = useState(null);
   const dispatch = useDispatch();
   useEffect(() => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
@@ -27,9 +27,10 @@ const App = () => {
   useEffect(() => {
     const user = storage.loadUser();
     if (user) {
-      setUser(user);
+      dispatch(setUser(user));
     }
   }, []);
+  const user = useSelector((state) => state.user);
   const blogs = useSelector((state) => state.blogs);
 
   const blogFormRef = createRef();
@@ -41,7 +42,7 @@ const App = () => {
   const handleLogin = async (credentials) => {
     try {
       const user = await loginService.login(credentials);
-      setUser(user);
+      dispatch(setUser(user));
       storage.saveUser(user);
       notify(`Welcome back, ${user.name}`);
     } catch (error) {
@@ -68,7 +69,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    setUser(null);
+    dispatch(setUser(null));
     storage.removeUser();
     notify(`Bye, ${user.name}!`);
   };
