@@ -23,6 +23,15 @@ const App = () => {
     mutationFn: blogService.create,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["blogs"] }),
   });
+  const updateBlogMutation = useMutation({
+    mutationFn: blogService.update,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["blogs"] }),
+  });
+
+  const removeBlogMutation = useMutation({
+    mutationFn: blogService.remove,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["blogs"] }),
+  });
   const result = useQuery({
     queryKey: ["blogs"],
     queryFn: blogService.getAll,
@@ -30,7 +39,6 @@ const App = () => {
     refetchOnWindowFocus: false,
   });
   const blogs = result.data || [];
-  console.log(blogs);
 
   useEffect(() => {
     const user = storage.loadUser();
@@ -73,12 +81,9 @@ const App = () => {
   };
 
   const handleVote = async (blog) => {
-    const updatedBlog = await blogService.update(blog.id, {
-      ...blog,
-      likes: blog.likes + 1,
-    });
+    const updatedBlog = { ...blog, likes: blog.likes + 1 };
     updatedBlog.user = blog.user;
-    dispatch(likeBlog(updatedBlog));
+    updateBlogMutation.mutate(updatedBlog);
     notificationDispatch(
       setNotificationMessage(
         `You liked ${updatedBlog.title} by ${updatedBlog.author}`
@@ -100,8 +105,7 @@ const App = () => {
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.remove(blog.id);
-      dispatch(removeBlog(blog));
+      removeBlogMutation.mutate(blog.id);
       notificationDispatch(
         setNotificationMessage(`Blog ${blog.title}, by ${blog.author} removed`)
       );
