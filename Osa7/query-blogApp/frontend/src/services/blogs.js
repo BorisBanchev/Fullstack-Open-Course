@@ -1,15 +1,15 @@
 import axios from "axios";
 import storage from "./storage";
 
-const baseUrl = "/api/blogs";
+const baseUrl = "api/blogs";
 
 const getConfit = () => ({
   headers: { Authorization: `Bearer ${storage.loadUser().token}` },
 });
 
-const getAll = () => {
-  const request = axios.get(baseUrl);
-  return request.then((response) => response.data);
+const getAll = async () => {
+  const response = await axios.get(baseUrl).then((response) => response.data);
+  return response;
 };
 
 const update = (id, newObject) => {

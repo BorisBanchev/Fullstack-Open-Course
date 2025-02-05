@@ -13,19 +13,24 @@ import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setBlogs,
-  createBlog,
-  likeBlog,
-  removeBlog,
-} from "./reducers/blogsReducer";
-
 import { setUser, clearUser } from "./reducers/userReducer";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 const App = () => {
   const dispatch = useDispatch();
-  useEffect(() => {
-    blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
-  }, []);
+  const queryClient = useQueryClient();
+  const newBlogMutation = useMutation({
+    mutationFn: blogService.create,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["blogs"] }),
+  });
+  const result = useQuery({
+    queryKey: ["blogs"],
+    queryFn: blogService.getAll,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+  const blogs = result.data || [];
+  console.log(blogs);
 
   useEffect(() => {
     const user = storage.loadUser();
@@ -34,7 +39,6 @@ const App = () => {
     }
   }, []);
   const user = useSelector((state) => state.user);
-  const blogs = useSelector((state) => state.blogs);
 
   const blogFormRef = createRef();
   const [notification, notificationDispatch] = useContext(NotificationContext);
@@ -58,12 +62,9 @@ const App = () => {
   };
 
   const handleCreate = async (blog) => {
-    const newBlog = await blogService.create(blog);
-    dispatch(createBlog(newBlog));
+    newBlogMutation.mutate(blog);
     notificationDispatch(
-      setNotificationMessage(
-        `Blog created: ${newBlog.title}, ${newBlog.author}`
-      )
+      setNotificationMessage(`Blog created: ${blog.title}, ${blog.author}`)
     );
     setTimeout(() => {
       notificationDispatch(clearNotificationMessage());
