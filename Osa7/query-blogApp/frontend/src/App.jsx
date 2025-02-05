@@ -4,6 +4,10 @@ import {
   setNotificationMessage,
   clearNotificationMessage,
 } from "./contexts/NotificationContext";
+
+import { setUser, clearUser } from "./contexts/UserContext";
+import UserContext from "./contexts/UserContext";
+
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import storage from "./services/storage";
@@ -12,12 +16,10 @@ import Blog from "./components/Blog";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser, clearUser } from "./reducers/userReducer";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const App = () => {
-  const dispatch = useDispatch();
+  const [user, userDispatch] = useContext(UserContext);
   const queryClient = useQueryClient();
   const newBlogMutation = useMutation({
     mutationFn: blogService.create,
@@ -43,10 +45,9 @@ const App = () => {
   useEffect(() => {
     const user = storage.loadUser();
     if (user) {
-      dispatch(setUser(user));
+      userDispatch(setUser(user));
     }
   }, []);
-  const user = useSelector((state) => state.user);
 
   const blogFormRef = createRef();
   const [notification, notificationDispatch] = useContext(NotificationContext);
@@ -54,7 +55,7 @@ const App = () => {
   const handleLogin = async (credentials) => {
     try {
       const user = await loginService.login(credentials);
-      dispatch(setUser(user));
+      userDispatch(setUser(user));
       storage.saveUser(user);
       notificationDispatch(
         setNotificationMessage(`Welcome back, ${user.name}`)
@@ -95,7 +96,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    dispatch(setUser(null));
+    userDispatch(clearUser());
     storage.removeUser();
     notificationDispatch(setNotificationMessage(`Bye, ${user.name}!`));
     setTimeout(() => {
