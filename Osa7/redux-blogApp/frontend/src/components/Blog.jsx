@@ -17,13 +17,19 @@ const Blog = ({ handleVote, handleLogout }) => {
   return (
     <div>
       <Notification />
-      <h2>blogs</h2>
-      <h1>{blog.title}</h1>
+      <h2>blog app</h2>
+      <h2>{blog.title}</h2>
       <div>
         <a href="">{blog.url}</a>
       </div>
       {blog.likes} likes <button onClick={() => handleVote(blog)}>like</button>
       <div>added by {nameOfUser}</div>
+      <h2>comments</h2>
+      <div>
+        {blog.comments.map((comment) => (
+          <li key={comment}>{comment}</li>
+        ))}
+      </div>
     </div>
   );
 };
