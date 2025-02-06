@@ -16,12 +16,6 @@ export const User = ({ handleLogout, users }) => {
       <h2>blogs</h2>
       <Notification />
 
-      <div>
-        {loggedUser.name} logged in
-        <button onClick={handleLogout} style={{ marginLeft: "10px" }}>
-          logout
-        </button>
-      </div>
       <h3>added blogs</h3>
       <ul>
         {blogs.map((blog) => (
@@ -39,13 +33,6 @@ const Users = ({ handleLogout, users }) => {
     <div>
       <h2>blogs</h2>
       <Notification />
-
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout} style={{ marginLeft: "10px" }}>
-          logout
-        </button>
-      </div>
 
       <div>
         <h2>Users</h2>

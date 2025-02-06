@@ -21,6 +21,7 @@ import {
 } from "./reducers/blogsReducer";
 
 import { setUser, clearUser } from "./reducers/userReducer";
+import Navbar from "./components/Navbar";
 
 const App = () => {
   const style = {
@@ -29,6 +30,7 @@ const App = () => {
     borderWidth: 1,
     marginBottom: 5,
   };
+
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   useEffect(() => {
@@ -109,43 +111,44 @@ const App = () => {
   const byLikes = (a, b) => b.likes - a.likes;
   const sortedBlogs = [...blogs].sort(byLikes);
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/users"
-          element={<Users handleLogout={handleLogout} users={users} />}
-        />
-        <Route
-          path="/users/:id"
-          element={<User handleLogout={handleLogout} users={users} />}
-        />
-        <Route
-          path="/"
-          element={
-            <div>
-              <h2>blogs</h2>
-              <Notification />
+    <>
+      <Router>
+        <Navbar handleLogout={handleLogout} />
+        <Routes>
+          <Route
+            path="/users"
+            element={<Users handleLogout={handleLogout} users={users} />}
+          />
+          <Route
+            path="/users/:id"
+            element={<User handleLogout={handleLogout} users={users} />}
+          />
+          <Route
+            path="/"
+            element={
               <div>
-                {user.name} logged in
-                <button onClick={handleLogout}>logout</button>
+                <h2>blogs</h2>
+                <Notification />
+                <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+                  <NewBlog doCreate={handleCreate} />
+                </Togglable>
+                {sortedBlogs.map((blog) => (
+                  <div style={style} key={blog.id}>
+                    <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                  </div>
+                ))}
               </div>
-              <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-                <NewBlog doCreate={handleCreate} />
-              </Togglable>
-              {sortedBlogs.map((blog) => (
-                <div style={style} key={blog.id}>
-                  <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-                </div>
-              ))}
-            </div>
-          }
-        />
-        <Route
-          path="/blogs/:id"
-          element={<Blog handleVote={handleVote} handleLogout={handleLogout} />}
-        />
-      </Routes>
-    </Router>
+            }
+          />
+          <Route
+            path="/blogs/:id"
+            element={
+              <Blog handleVote={handleVote} handleLogout={handleLogout} />
+            }
+          />
+        </Routes>
+      </Router>
+    </>
   );
 };
 

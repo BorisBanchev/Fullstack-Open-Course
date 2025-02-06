@@ -18,10 +18,6 @@ const Blog = ({ handleVote, handleLogout }) => {
     <div>
       <Notification />
       <h2>blogs</h2>
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
       <h1>{blog.title}</h1>
       <div>
         <a href="">{blog.url}</a>
