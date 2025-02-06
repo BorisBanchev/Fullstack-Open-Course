@@ -111,7 +111,7 @@ const App = () => {
   const byLikes = (a, b) => b.likes - a.likes;
   const sortedBlogs = [...blogs].sort(byLikes);
   return (
-    <>
+    <div className="container">
       <Router>
         <Navbar handleLogout={handleLogout} />
         <Routes>
@@ -148,7 +148,7 @@ const App = () => {
           />
         </Routes>
       </Router>
-    </>
+    </div>
   );
 };
 
