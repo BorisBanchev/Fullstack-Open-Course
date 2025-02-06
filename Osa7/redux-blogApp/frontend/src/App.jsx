@@ -1,10 +1,12 @@
-import { useEffect, createRef } from "react";
+import { useEffect, createRef, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
+import usersService from "./services/users";
 import storage from "./services/storage";
 import Login from "./components/Login";
 import Blog from "./components/Blog";
+import { User } from "./components/Users";
 import Users from "./components/Users";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
@@ -19,8 +21,13 @@ import {
 } from "./reducers/blogsReducer";
 
 import { setUser, clearUser } from "./reducers/userReducer";
+
 const App = () => {
   const dispatch = useDispatch();
+  const [users, setUsers] = useState([]);
+  useEffect(() => {
+    usersService.getAll().then((users) => setUsers(users));
+  }, []);
   useEffect(() => {
     blogService.getAll().then((blogs) => dispatch(setBlogs(blogs)));
   }, []);
@@ -98,7 +105,14 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/users" element={<Users handleLogout={handleLogout} />} />
+        <Route
+          path="/users"
+          element={<Users handleLogout={handleLogout} users={users} />}
+        />
+        <Route
+          path="/users/:id"
+          element={<User handleLogout={handleLogout} users={users} />}
+        />
       </Routes>
       {/* <div>
         <h2>blogs</h2>
