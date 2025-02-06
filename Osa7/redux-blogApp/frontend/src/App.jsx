@@ -1,10 +1,11 @@
-import { useState, useEffect, createRef } from "react";
-
+import { useEffect, createRef } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import blogService from "./services/blogs";
 import loginService from "./services/login";
 import storage from "./services/storage";
 import Login from "./components/Login";
 import Blog from "./components/Blog";
+import Users from "./components/Users";
 import NewBlog from "./components/NewBlog";
 import Notification from "./components/Notification";
 import Togglable from "./components/Togglable";
@@ -63,7 +64,7 @@ const App = () => {
       ...blog,
       likes: blog.likes + 1,
     });
-
+    updatedBlog.user = blog.user;
     notify(`You liked ${updatedBlog.title} by ${updatedBlog.author}`);
     dispatch(likeBlog(updatedBlog));
   };
@@ -95,25 +96,30 @@ const App = () => {
   const byLikes = (a, b) => b.likes - a.likes;
   const sortedBlogs = [...blogs].sort(byLikes);
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
-      <div>
-        {user.name} logged in
-        <button onClick={handleLogout}>logout</button>
-      </div>
-      <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-        <NewBlog doCreate={handleCreate} />
-      </Togglable>
-      {sortedBlogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleVote={handleVote}
-          handleDelete={handleDelete}
-        />
-      ))}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/users" element={<Users handleLogout={handleLogout} />} />
+      </Routes>
+      {/* <div>
+        <h2>blogs</h2>
+        <Notification />
+        <div>
+          {user.name} logged in
+          <button onClick={handleLogout}>logout</button>
+        </div>
+        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+          <NewBlog doCreate={handleCreate} />
+        </Togglable>
+        {sortedBlogs.map((blog) => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            handleVote={handleVote}
+            handleDelete={handleDelete}
+          />
+        ))}
+      </div> */}
+    </Router>
   );
 };
 
