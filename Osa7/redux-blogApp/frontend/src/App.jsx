@@ -23,6 +23,12 @@ import {
 import { setUser, clearUser } from "./reducers/userReducer";
 
 const App = () => {
+  const style = {
+    border: "solid",
+    padding: 10,
+    borderWidth: 1,
+    marginBottom: 5,
+  };
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   useEffect(() => {
@@ -113,26 +119,32 @@ const App = () => {
           path="/users/:id"
           element={<User handleLogout={handleLogout} users={users} />}
         />
+        <Route
+          path="/"
+          element={
+            <div>
+              <h2>blogs</h2>
+              <Notification />
+              <div>
+                {user.name} logged in
+                <button onClick={handleLogout}>logout</button>
+              </div>
+              <Togglable buttonLabel="create new blog" ref={blogFormRef}>
+                <NewBlog doCreate={handleCreate} />
+              </Togglable>
+              {sortedBlogs.map((blog) => (
+                <div style={style} key={blog.id}>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                </div>
+              ))}
+            </div>
+          }
+        />
+        <Route
+          path="/blogs/:id"
+          element={<Blog handleVote={handleVote} handleLogout={handleLogout} />}
+        />
       </Routes>
-      {/* <div>
-        <h2>blogs</h2>
-        <Notification />
-        <div>
-          {user.name} logged in
-          <button onClick={handleLogout}>logout</button>
-        </div>
-        <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-          <NewBlog doCreate={handleCreate} />
-        </Togglable>
-        {sortedBlogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleVote={handleVote}
-            handleDelete={handleDelete}
-          />
-        ))}
-      </div> */}
     </Router>
   );
 };
