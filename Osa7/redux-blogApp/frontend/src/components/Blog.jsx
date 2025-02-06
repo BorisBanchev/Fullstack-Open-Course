@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import Notification from "./Notification";
-const Blog = ({ handleVote, handleLogout }) => {
-  const user = useSelector((state) => state.user);
+import blogService from "../services/blogs";
+import { commentBlog } from "../reducers/blogsReducer";
 
+const Blog = ({ handleVote }) => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const [comment, setComment] = useState("");
   const blogs = useSelector((state) => state.blogs);
   const id = useParams().id;
   const blog = blogs.find((blog) => blog.id === id);
@@ -13,6 +17,18 @@ const Blog = ({ handleVote, handleLogout }) => {
     return null;
   }
   const nameOfUser = blog.user ? blog.user.name : "anonymous";
+
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
+  const addComment = async (event) => {
+    event.preventDefault();
+    const commentToAdd = comment;
+    const updatedBlog = await blogService.createComment(blog.id, commentToAdd);
+    dispatch(commentBlog(updatedBlog));
+    setComment("");
+  };
 
   return (
     <div>
@@ -25,6 +41,17 @@ const Blog = ({ handleVote, handleLogout }) => {
       {blog.likes} likes <button onClick={() => handleVote(blog)}>like</button>
       <div>added by {nameOfUser}</div>
       <h2>comments</h2>
+      <form onSubmit={addComment}>
+        <div>
+          <input
+            type="text"
+            name="comment"
+            value={comment}
+            onChange={handleCommentChange}
+          />
+          <button type="submit"> add comment </button>
+        </div>
+      </form>
       <div>
         {blog.comments.map((comment) => (
           <li key={comment}>{comment}</li>

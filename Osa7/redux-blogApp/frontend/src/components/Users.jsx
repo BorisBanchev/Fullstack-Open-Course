@@ -13,7 +13,7 @@ export const User = ({ handleLogout, users }) => {
   const blogs = user.blogs;
   return (
     <div>
-      <h2>blogs</h2>
+      <h2>blog app</h2>
       <Notification />
 
       <h3>added blogs</h3>
@@ -26,12 +26,12 @@ export const User = ({ handleLogout, users }) => {
   );
 };
 
-const Users = ({ handleLogout, users }) => {
+const Users = ({ users }) => {
   const user = useSelector((state) => state.user);
 
   return (
     <div>
-      <h2>blogs</h2>
+      <h2>blog app</h2>
       <Notification />
 
       <div>

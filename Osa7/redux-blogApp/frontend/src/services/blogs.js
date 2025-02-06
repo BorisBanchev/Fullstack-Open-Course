@@ -27,4 +27,13 @@ const remove = async (id) => {
   return response.data;
 };
 
-export default { getAll, create, update, remove };
+const createComment = async (id, comment) => {
+  const response = await axios.post(
+    `http://localhost:3003/api/blogs/${id}/comments`,
+    { comment },
+    getConfit()
+  );
+  return response.data;
+};
+
+export default { getAll, create, update, remove, createComment };

@@ -127,7 +127,7 @@ const App = () => {
             path="/"
             element={
               <div>
-                <h2>blogs</h2>
+                <h2>blog app</h2>
                 <Notification />
                 <Togglable buttonLabel="create new blog" ref={blogFormRef}>
                   <NewBlog doCreate={handleCreate} />
