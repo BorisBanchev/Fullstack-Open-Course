@@ -1,0 +1,24 @@
+{
+  "name": "graphql-backend",
+  "version": "1.0.0",
+  "main": "library-backend.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node library-backend.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/BorisBanchev/Fullstack-Open-Course.git"
+  },
+  "author": "Boris Banchev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BorisBanchev/Fullstack-Open-Course/issues"
+  },
+  "homepage": "https://github.com/BorisBanchev/Fullstack-Open-Course#readme",
+  "description": "",
+  "dependencies": {
+    "@apollo/server": "^4.11.3",
+    "graphql": "^16.10.0"
+  }
+}
