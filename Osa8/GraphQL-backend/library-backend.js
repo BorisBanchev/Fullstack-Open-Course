@@ -106,6 +106,10 @@ const typeDefs = `
       author: String!
       genres: [String!]!
     ): Book!
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
   }
 
   type Book {
@@ -175,6 +179,17 @@ const resolvers = {
       const newBook = { ...args, id: uuid() };
       books.push(newBook);
       return newBook;
+    },
+    editAuthor: (root, args) => {
+      const existingAuthorToUpdate = authors.find(
+        (author) => author.name === args.name
+      );
+      if (!existingAuthorToUpdate) {
+        return null;
+      }
+
+      existingAuthorToUpdate.born = args.setBornTo;
+      return existingAuthorToUpdate;
     },
   },
 };
