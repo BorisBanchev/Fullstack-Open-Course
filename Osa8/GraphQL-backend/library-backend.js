@@ -12,7 +12,6 @@ require("dotenv").config();
 const MONGODB_URI = process.env.MONGODB_URI;
 
 console.log("connecting to", MONGODB_URI);
-
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
@@ -115,9 +114,8 @@ let books = [
 ];
 
 /*
-  you can remove the placeholder query once your first one has been implemented 
+you can remove the placeholder query once your first one has been implemented 
 */
-
 const typeDefs = `
   type Mutation {
     addBook(
@@ -156,13 +154,36 @@ const resolvers = {
     bookCount: async () => Book.collection.countDocuments(),
     authorCount: async () => Author.collection.countDocuments(),
     allBooks: async (root, args) => {
-      return Book.find({});
+      const filter = {};
+      if (!args.author && !args.genre) {
+        return Book.find({}).populate("author");
+      }
+
+      if (!args.author && args.genre) {
+        return Book.find({ genres: { $in: [args.genre] } }).populate("author");
+      }
+
+      if (args.author) {
+        const author = await Author.findOne({ name: args.author });
+        if (author) {
+          filter.author = author._id;
+        } else {
+          return [];
+        }
+
+        if (args.genre) {
+          filter.genres = { $in: [args.genre] };
+        }
+
+        return Book.find(filter).populate("author");
+      }
     },
     allAuthors: async () => Author.find({}),
   },
   Author: {
-    bookCount: (author) => {
-      return books.filter((book) => book.author === author.name).length;
+    bookCount: async (author) => {
+      const books = await Book.find({ author: author._id });
+      return books.length;
     },
   },
   Mutation: {
@@ -184,16 +205,14 @@ const resolvers = {
       return book.populate("author");
     },
 
-    editAuthor: (root, args) => {
-      const existingAuthorToUpdate = authors.find(
-        (author) => author.name === args.name
-      );
-      if (!existingAuthorToUpdate) {
+    editAuthor: async (root, args) => {
+      const authorToUpdate = await Author.findOne({ name: args.name });
+      if (!authorToUpdate) {
         return null;
       }
-
-      existingAuthorToUpdate.born = args.setBornTo;
-      return existingAuthorToUpdate;
+      authorToUpdate.born = args.setBornTo;
+      await authorToUpdate.save();
+      return authorToUpdate;
     },
   },
 };
