@@ -112,7 +112,6 @@ let books = [
     genres: ["classic", "revolution"],
   },
 ];
-
 /*
 you can remove the placeholder query once your first one has been implemented 
 */
@@ -188,12 +187,20 @@ const resolvers = {
   },
   Mutation: {
     addBook: async (root, args) => {
-      console.log("moooo  ");
       let author = await Author.findOne({ name: args.author });
-      console.log(args);
       if (!author) {
         author = new Author({ name: args.author });
-        await author.save();
+        try {
+          await author.save();
+        } catch (error) {
+          throw new GraphQLError("Author's name length must be at least 4!", {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
       }
       const book = new Book({
         title: args.title,
@@ -201,7 +208,20 @@ const resolvers = {
         author: author._id,
         genres: args.genres,
       });
-      await book.save();
+      try {
+        await book.save();
+      } catch (error) {
+        throw new GraphQLError(
+          "Title of the book must have length at least 5!",
+          {
+            extensions: {
+              code: "BAD_USER_INPUT",
+              invalidArgs: args.title,
+              error,
+            },
+          }
+        );
+      }
       return book.populate("author");
     },
 
