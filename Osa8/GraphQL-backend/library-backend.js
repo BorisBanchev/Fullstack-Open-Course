@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const { GraphQLError } = require("graphql");
 mongoose.set("strictQuery", false);
 
+const User = require("./models/user");
 const Author = require("./models/author");
 const Book = require("./models/book");
 require("dotenv").config();
@@ -127,6 +128,14 @@ const typeDefs = `
       name: String!
       setBornTo: Int!
     ): Author
+    createUser(
+    username: String!
+    favoriteGenre: String!
+  ): User
+  login(
+    username: String!
+    password: String!
+  ): Token
   }
   type Book {
     title: String!
@@ -135,6 +144,16 @@ const typeDefs = `
     id: ID!
     genres: [String!]!
   }
+
+  type User {
+  username: String!
+  favoriteGenre: String!
+  id: ID!
+}
+  type Token {
+  value: String!
+}
+
   type Author {
     name: String!
     id: ID!
@@ -142,12 +161,15 @@ const typeDefs = `
     bookCount: Int!
   }
   type Query {
+    me: User
     bookCount: Int!
     authorCount: Int!
     allBooks(author:String, genre:String): [Book!]!
     allAuthors: [Author!]!
   }
 `;
+
+const jwt = require("jsonwebtoken");
 const resolvers = {
   Query: {
     bookCount: async () => Book.collection.countDocuments(),
@@ -178,6 +200,9 @@ const resolvers = {
       }
     },
     allAuthors: async () => Author.find({}),
+    me: (root, args, context) => {
+      return context.currentUser;
+    },
   },
   Author: {
     bookCount: async (author) => {
@@ -186,7 +211,15 @@ const resolvers = {
     },
   },
   Mutation: {
-    addBook: async (root, args) => {
+    addBook: async (root, args, context) => {
+      const currentUser = context.currentUser;
+      if (!currentUser) {
+        throw new GraphQLError("not authenticated", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      }
       let author = await Author.findOne({ name: args.author });
       if (!author) {
         author = new Author({ name: args.author });
@@ -225,7 +258,15 @@ const resolvers = {
       return book.populate("author");
     },
 
-    editAuthor: async (root, args) => {
+    editAuthor: async (root, args, context) => {
+      const currentUser = context.currentUser;
+      if (!currentUser) {
+        throw new GraphQLError("not authenticated", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      }
       const authorToUpdate = await Author.findOne({ name: args.name });
       if (!authorToUpdate) {
         return null;
@@ -233,6 +274,39 @@ const resolvers = {
       authorToUpdate.born = args.setBornTo;
       await authorToUpdate.save();
       return authorToUpdate;
+    },
+    createUser: async (root, args) => {
+      const user = new User({
+        username: args.username,
+        favoriteGenre: args.favoriteGenre,
+      });
+      return user.save().catch((error) => {
+        throw new GraphQLError("Creating the user failed", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+            invalidArgs: args.username,
+            error,
+          },
+        });
+      });
+    },
+    login: async (root, args) => {
+      const user = await User.findOne({ username: args.username });
+
+      if (!user || args.password !== "secret") {
+        throw new GraphQLError("wrong credentials", {
+          extensions: {
+            code: "BAD_USER_INPUT",
+          },
+        });
+      }
+
+      const userForToken = {
+        username: user.username,
+        id: user._id,
+      };
+
+      return { value: jwt.sign(userForToken, process.env.JWT_SECRET) };
     },
   },
 };
@@ -244,6 +318,17 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req, res }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.startsWith("Bearer ")) {
+      const decodedToken = jwt.verify(
+        auth.substring(7),
+        process.env.JWT_SECRET
+      );
+      const currentUser = await User.findById(decodedToken.id);
+      return { currentUser };
+    }
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
