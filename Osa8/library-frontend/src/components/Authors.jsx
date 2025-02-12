@@ -22,10 +22,14 @@ const Authors = (props) => {
 
   const submit = async (event) => {
     event.preventDefault();
-    editAuthor({
-      variables: { name, setBornTo: born },
-    }),
-      setName("");
+    try {
+      const { data } = await editAuthor({
+        variables: { name, setBornTo: born },
+      });
+    } catch (error) {
+      console.error("Error executing mutation:", error);
+    }
+    setName("");
     setBorn("");
   };
 
@@ -49,33 +53,36 @@ const Authors = (props) => {
         </tbody>
       </table>
       <br />
-      <div>
-        <h3>Set birthyear</h3>
-        <form onSubmit={submit}>
-          <div>
-            <select
-              name="name"
-              id="name"
-              value={name}
-              onChange={({ target }) => setName(target.value)}
-            >
-              {authors.map((a) => (
-                <option key={a.name} value={a.name}>
-                  {a.name}
+      {props.token && (
+        <div>
+          <h3>Set birthyear</h3>
+          <form onSubmit={submit}>
+            <div>
+              <select
+                value={name}
+                onChange={({ target }) => setName(target.value)}
+              >
+                <option value="" disabled>
+                  Select author
                 </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            born
-            <input
-              value={born}
-              onChange={({ target }) => setBorn(Number(target.value))}
-            />
-          </div>
-          <button type="submit">update author</button>
-        </form>
-      </div>
+                {authors.map((a) => (
+                  <option key={a.name} value={a.name}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              born
+              <input
+                value={born}
+                onChange={({ target }) => setBorn(Number(target.value))}
+              />
+            </div>
+            <button type="submit">update author</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
