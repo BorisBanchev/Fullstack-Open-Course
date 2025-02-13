@@ -41,7 +41,7 @@ const App = () => {
 
         <Authors show={page === "authors"} setError={notify} token={token} />
 
-        <Books show={page === "books"} />
+        <Books show={page === "books"} token={token} />
 
         <LoginForm
           show={page === "login"}
@@ -63,7 +63,7 @@ const App = () => {
 
       <Authors show={page === "authors"} setError={notify} token={token} />
 
-      <Books show={page === "books"} />
+      <Books show={page === "books"} token={token} />
 
       <NewBook show={page === "add"} setError={notify} />
     </div>
