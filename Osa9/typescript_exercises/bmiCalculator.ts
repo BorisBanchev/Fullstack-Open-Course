@@ -10,8 +10,25 @@ const calculateBmi = (height: number, weight: number): string => {
   return "obese";
 };
 
+const parseArgumentsForBmi = (
+  args: string[]
+): { height: number; weight: number } => {
+  if (args.length < 4) throw new Error("Not enough arguments");
+  if (args.length > 4) throw new Error("Too many arguments");
+  const height = Number(args[2]);
+  const weight = Number(args[3]);
+  if (isNaN(height)) {
+    throw new Error("Provided height value was not a number!");
+  }
+  if (isNaN(weight)) {
+    throw new Error("Provided weight value was not a number!");
+  }
+  return { height, weight };
+};
+
 try {
-  console.log(calculateBmi(180, 74));
+  const { height, weight } = parseArgumentsForBmi(process.argv);
+  console.log(calculateBmi(height, weight));
 } catch (error: unknown) {
   let errorMessage = "Something went wrong: ";
   if (error instanceof Error) {

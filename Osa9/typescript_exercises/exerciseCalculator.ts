@@ -41,7 +41,7 @@ const calculateExercises = (
     rating = 1;
     ratingDescription = "You could've done better!";
   } else if (
-    averageTrainingHours >= 0.75 * target &&
+    averageTrainingHours >= 0.5 * target &&
     averageTrainingHours < target
   ) {
     rating = 2;
@@ -61,8 +61,27 @@ const calculateExercises = (
   };
 };
 
+const parseArguments = (
+  args: string[]
+): { target: number; exerciseTimes: number[] } => {
+  if (args.length < 4) throw new Error("Not enough arguments");
+  const target = Number(args[2]);
+  const exerciseTimes = args.slice(3).map((arg) => {
+    const num = Number(arg);
+    if (isNaN(num)) {
+      throw new Error("Provided values were not numbers!");
+    }
+    return num;
+  });
+  if (isNaN(target)) {
+    throw new Error("Provided target value was not a number!");
+  }
+  return { target, exerciseTimes };
+};
+
 try {
-  console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+  const { target, exerciseTimes } = parseArguments(process.argv);
+  console.log(calculateExercises(exerciseTimes, target));
 } catch (error: unknown) {
   let errorMessage = "Something went wrong: ";
   if (error instanceof Error) {
