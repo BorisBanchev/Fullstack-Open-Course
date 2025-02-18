@@ -8,7 +8,7 @@
     "calculateBmi": "ts-node bmiCalculator.ts",
     "calculateExercises": "ts-node exerciseCalculator.ts",
     "start": "ts-node hello.ts",
-    "dev": "ts-node-dev --respawn hello.ts"
+    "dev": "ts-node-dev --respawn index.ts"
   },
   "repository": {
     "type": "git",
