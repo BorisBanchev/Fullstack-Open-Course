@@ -1,4 +1,4 @@
-interface Result {
+export interface Result {
   periodLength: number;
   trainingDays: number;
   success: boolean;
@@ -26,7 +26,7 @@ const calculateAverageTrainingTime = (exerciseHours: number[]): number => {
   return total / exerciseHours.length;
 };
 
-const calculateExercises = (
+export const calculateExercises = (
   exerciseHours: number[],
   target: number
 ): Result => {
