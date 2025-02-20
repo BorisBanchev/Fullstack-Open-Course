@@ -1,0 +1,10 @@
+POST http://localhost:3000/api/patients/
+Content-Type: application/json
+
+{
+    "name": "Boris Banchev",
+    "dateOfBirth": "2003-10-07",
+    "ssn": "090286-122X",
+    "gender": "male",
+    "occupation": "Helsinki"
+  }
