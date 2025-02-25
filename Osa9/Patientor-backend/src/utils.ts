@@ -1,4 +1,10 @@
-import { newPatientEntry, Gender } from "./types";
+import {
+  newPatientEntry,
+  Gender,
+  Entry,
+  HospitalEntry,
+  OccupationalHealthCareEntry,
+} from "./types";
 import { z } from "zod";
 
 export const newPatientSchema = z.object({
@@ -11,6 +17,16 @@ export const newPatientSchema = z.object({
 
 const toNewPatientEntry = (object: unknown): newPatientEntry => {
   return newPatientSchema.parse(object);
+};
+
+export const isHospitalEntry = (entry: Entry): entry is HospitalEntry => {
+  return entry.type === "HospitalEntry";
+};
+
+export const isOccupationalHealthCareEntry = (
+  entry: Entry
+): entry is OccupationalHealthCareEntry => {
+  return entry.type === "OccupationalHealthCareEntry";
 };
 
 export default toNewPatientEntry;

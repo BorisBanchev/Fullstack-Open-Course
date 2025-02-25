@@ -7,7 +7,36 @@ export interface DiagnosisEntry {
   latin?: string;
 }
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface Entry {}
+
+interface Discharge {
+  date: string;
+  criteria: string;
+}
+interface SickLeave {
+  startDate: string;
+  endDate: string;
+}
+
+interface BaseEntry {
+  id: string;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCodes?: Array<DiagnosisEntry["code"]>;
+}
+
+export interface HospitalEntry extends BaseEntry {
+  discharge: Discharge;
+  type: "HospitalEntry";
+}
+
+export interface OccupationalHealthCareEntry extends BaseEntry {
+  employerName: string;
+  sickLeave: SickLeave;
+  type: "OccupationalHealthCareEntry";
+}
+
+export type Entry = HospitalEntry | OccupationalHealthCareEntry;
 
 export interface PatientEntry {
   id: string;
