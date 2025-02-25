@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { DiaryEntry, NewDiaryEntry, Weather, Visibility } from "../types";
 import { SyntheticEvent } from "react";
 import diaryService from "../services/diaryService";
@@ -6,9 +7,11 @@ import diaryService from "../services/diaryService";
 const NewDiary = ({
   diaries,
   setDiaries,
+  setErrorMessage,
 }: {
   diaries: DiaryEntry[];
   setDiaries: React.Dispatch<React.SetStateAction<DiaryEntry[]>>;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const [date, setDate] = useState("");
   const [visibility, setVisibility] = useState<Visibility>(
@@ -37,7 +40,13 @@ const NewDiary = ({
       setWeather("sunny" as Weather);
       setComment("");
     } catch (error) {
-      console.error("Failed to create diary entry", error);
+      if (axios.isAxiosError(error) && error.response) {
+        setErrorMessage(error.response.data);
+        setTimeout(() => setErrorMessage(""), 5000);
+      } else {
+        setErrorMessage("An unexpected error occurred");
+        setTimeout(() => setErrorMessage(""), 5000);
+      }
     }
   };
 
