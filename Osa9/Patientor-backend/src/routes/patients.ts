@@ -10,6 +10,11 @@ router.get("/", (_req, res) => {
   res.send(patientsService.getEntries());
 });
 
+router.get("/:id", (req, res) => {
+  const patientID: string = req.params.id;
+  res.send(patientsService.getPatientEntry(patientID));
+});
+
 router.post(
   "/",
   newPatientParser,
