@@ -6,7 +6,6 @@ export interface DiagnosisEntry {
   name: string;
   latin?: string;
 }
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 
 interface Discharge {
   date: string;

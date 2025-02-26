@@ -23,11 +23,18 @@ const EntryDetails = ({
   date,
   description,
   diagnoseCodes,
+  diagnoses,
 }: {
   date: string;
   description: string;
   diagnoseCodes: Array<Diagnosis["code"]>;
+  diagnoses: Diagnosis[];
 }) => {
+  const getDiagnosisDescription = (code: string) => {
+    const correctDiagnosis = diagnoses.find((d) => d.code === code);
+    return correctDiagnosis ? correctDiagnosis.name : "Unknown diagnosis";
+  };
+
   return (
     <div>
       <p>
@@ -37,7 +44,9 @@ const EntryDetails = ({
         <div>
           <ul>
             {diagnoseCodes.map((code) => (
-              <li key={code}>{code}</li>
+              <li key={code}>
+                {code} {getDiagnosisDescription(code)}
+              </li>
             ))}
           </ul>
         </div>
@@ -46,7 +55,7 @@ const EntryDetails = ({
   );
 };
 
-const PatientData = () => {
+const PatientData = ({ diagnoses }: { diagnoses: Diagnosis[] }) => {
   const [patientData, setPatientData] = useState<Patient>();
   const { id } = useParams<{ id: string }>();
   useEffect(() => {
@@ -71,6 +80,7 @@ const PatientData = () => {
               date={entry.date}
               description={entry.description}
               diagnoseCodes={entry.diagnosisCodes || []}
+              diagnoses={diagnoses}
             />
           ))}
         </div>
